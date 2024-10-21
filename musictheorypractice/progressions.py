@@ -28,7 +28,7 @@ class Progression:
     def play_progression(self) -> None:
         """Play progression with MIDI."""
         # TODO: Do I always need to init this here?
-        fluidsynth.init("/usr/share/sounds/sf2/TimGM6mb.sf2")
+        # fluidsynth.init("/usr/share/sounds/sf2/TimGM6mb.sf2")
 
         bar = Bar(key=self.keysig, meter=(4, 4))
         for chord in self.chords:
@@ -37,14 +37,12 @@ class Progression:
         fluidsynth.play_Bar(bar, self.instrument, self.bpm)
         fluidsynth.stop_everything()
 
-    def print_info(self) -> None:
+    def info(self) -> tuple[str, ...]:
         """Prints info about the progression."""
-        print(self.name, "-".join(self.progression), "", sep="\n")
-
         chords_named: list[list[str]] = [
-            [note.name for note in chord] for chord in self.chords
+            "(" + ",".join([note.name for note in chord]) + ")" for chord in self.chords
         ]
-        print(*chords_named, sep="\n")
+        return (self.name, "-".join(self.progression), "", "\n".join(chords_named))
 
     @classmethod
     def get_random(cls) -> "Progression":
@@ -57,10 +55,10 @@ class Progression:
     def get_random_single_chord_interval(cls) -> "Progression":
         """Generate a length-two progression.
 
-        Generate random Progression object starting
+        Generate random Progression object starting and ending
         with I and having one additional number chord.
         """
-        # Always start with the "I" chord.
-        progression = ["I", random.choice(CHORD_NUMBERS)]
+        # Always start with the "I" chord, always end with "I" chord.
+        progression = ["I", random.choice(CHORD_NUMBERS), "I"]
         keysig = random.choice(KEYS)
         return cls(name=" ".join(progression), progression=progression, keysig=keysig)
